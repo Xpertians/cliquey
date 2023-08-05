@@ -1,14 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Float
+
 import uuid
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 db = SQLAlchemy(app)
-
-# ... (previous code)
 
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -18,7 +17,10 @@ class User(db.Model):
     # Add the 'profiles' relationship to the User model
     profiles = db.relationship('PublicProfile', back_populates='user')
 
-# ... (previous code)
+class RatedProfiles(db.Model):
+    id = Column(db.Integer, primary_key=True)
+    user_id = Column(db.Integer, ForeignKey('user.id'))
+    profile_id = Column(db.Integer, ForeignKey('public_profile.id'))
 
 class PublicProfile(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -27,6 +29,7 @@ class PublicProfile(db.Model):
     phones = db.Column(db.String(100))
     description = db.Column(db.Text)
     urls = db.Column(db.String(200))
+    rating = db.Column(db.Float, default=0.0)
 
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='profiles')
@@ -119,8 +122,6 @@ def edit_profile(profile_id):
     return render_template('profile_form.html', title='Edit Profile', form_data=profile)
 
 
-
-
 @app.route('/profile/<string:profile_id>/delete', methods=['POST'])
 def delete_profile(profile_id):
     if 'user_id' not in session:
@@ -147,10 +148,15 @@ def rate_profile(profile_id):
         flash('Please login to rate profiles', 'error')
         return redirect(url_for('login'))
 
-
     profile = PublicProfile.query.get_or_404(profile_id)
     if profile.user_id == profile_id:
         flash('You cannot rate your own profile', 'error')
+        return redirect(url_for('profile_details', profile_id=profile_id))
+        
+    # Check if the user has already voted for this profile
+    voted = RatedProfiles.query.filter_by(user_id=session['user_id'], profile_id=profile_id).first()
+    if voted:
+        flash('You have already voted for this profile', 'error')
         return redirect(url_for('profile_details', profile_id=profile_id))
 
     new_rating = int(request.form.get('rating'))
@@ -158,6 +164,11 @@ def rate_profile(profile_id):
     profile.ratings_sum += new_rating
     profile.num_ratings += 1
     profile.average_rating = profile.ratings_sum / profile.num_ratings
+    db.session.commit()
+    
+    # Insert a new row into the rated_profiles table
+    rated_profile = RatedProfiles(user_id=session['user_id'], profile_id=profile_id)
+    db.session.add(rated_profile)
     db.session.commit()
 
     flash('Rating submitted successfully', 'success')
