@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, Float
 import uuid
 
 app = Flask(__name__)
@@ -26,19 +27,15 @@ class PublicProfile(db.Model):
     phones = db.Column(db.String(100))
     description = db.Column(db.Text)
     urls = db.Column(db.String(200))
-    rating = db.Column(db.Float, default=1500)
 
     user_id = db.Column(db.String(36), db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='profiles')
 
+    ratings_sum = Column(Integer, default=0)   # To store the sum of all ratings
+    num_ratings = Column(Integer, default=0)   # To store the number of ratings
+    average_rating = Column(Float, default=0)  # To store the average rating
+
 # ... (Rest of the code remains the same)
-
-
-# Implement ELO rating system
-def calculate_elo_rating(winner_rating, loser_rating):
-    K = 32
-    W = 1 / (1 + 10**((loser_rating - winner_rating) / 400))
-    return winner_rating + K * (1 - W)
 
 @app.route('/logout')
 def logout():
@@ -150,18 +147,17 @@ def rate_profile(profile_id):
         flash('Please login to rate profiles', 'error')
         return redirect(url_for('login'))
 
-    rater_id = session['user_id']
-    rating = int(request.form['rating'])
 
     profile = PublicProfile.query.get_or_404(profile_id)
-    if profile.user_id == rater_id:
+    if profile.user_id == profile_id:
         flash('You cannot rate your own profile', 'error')
         return redirect(url_for('profile_details', profile_id=profile_id))
 
-    old_rating = profile.rating
-    new_rating = calculate_elo_rating(old_rating, rating)
-
-    profile.rating = new_rating
+    new_rating = int(request.form.get('rating'))
+    # Update the sum and count of ratings for the profile in the database
+    profile.ratings_sum += new_rating
+    profile.num_ratings += 1
+    profile.average_rating = profile.ratings_sum / profile.num_ratings
     db.session.commit()
 
     flash('Rating submitted successfully', 'success')

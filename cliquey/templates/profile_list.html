@@ -31,7 +31,7 @@
         {% for profile in profiles %}
             <tr>
                 <td>{{ profile.contact_info }}</td>
-                <td>{{ profile.rating }}</td>
+                <td>{{ profile.average_rating }}</td>
                 <td>
                     <a href="{{ url_for('profile_details', profile_id=profile.id) }}">View</a>
                     {% if profile.user_id == session['user_id'] %}
