@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ action }} Profile</title>
+</head>
+<body>
+    <h1>{{ action }} Profile</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+<form method="POST">
+    <div class="form-group">
+        <label for="contact_info">Contact Info</label>
+        <input type="text" class="form-control" id="contact_info" name="contact_info" value="{{ form_data.contact_info }}">
+    </div>
+    <div class="form-group">
+        <label for="emails">Emails</label>
+        <input type="text" class="form-control" id="emails" name="emails" value="{{ form_data.emails }}">
+    </div>
+    <div class="form-group">
+        <label for="phones">Phones</label>
+        <input type="text" class="form-control" id="phones" name="phones" value="{{ form_data.phones }}">
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control" id="description" name="description">{{ form_data.description }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="urls">URLs</label>
+        <input type="text" class="form-control" id="urls" name="urls" value="{{ form_data.urls }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+    <p><a href="{{ url_for('profile_list') }}">Back to Profile List</a></p>
+</body>
+</html>
