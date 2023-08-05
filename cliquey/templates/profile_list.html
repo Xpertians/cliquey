@@ -41,7 +41,7 @@
                         </form>
                     {% endif %}
 					{% if profile.user_id != session['user_id'] %}
-                    <form method="POST" action="{{ url_for('rate_profile', profile_id=profile.id) }}" style="display: inline-block;">
+					<form method="POST" action="{{ url_for('rate_profile', profile_id=profile.id) }}" style="display: inline-block;">
                         <label for="rating">Rate:</label>
                         <select id="rating" name="rating">
                             <option value="1">1</option>

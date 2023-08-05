@@ -144,7 +144,7 @@ def delete_profile(profile_id):
     return redirect(url_for('profile_list'))
 
 
-@app.route('/profile/<int:profile_id>/rate', methods=['POST'])
+@app.route('/profile/<string:profile_id>/rate', methods=['POST'])
 def rate_profile(profile_id):
     if 'user_id' not in session:
         flash('Please login to rate profiles', 'error')
