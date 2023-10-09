@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+</head>
+<body>
+    <h2>User Profile</h2>
+    <p><strong>Name:</strong> {{ profile.name }}</p>
+    <p><strong>Phone:</strong> {{ profile.phone }}</p>
+    <p><strong>Email:</strong> {{ profile.owner.email }}</p>
+    <p><strong>LinkedIn:</strong> <a href="{{ profile.linkedin }}">{{ profile.linkedin }}</a></p>
+    <p><strong>Bio:</strong> {{ profile.bio }}</p>
+</body>
+</html>

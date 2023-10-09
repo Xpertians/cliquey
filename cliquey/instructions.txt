@@ -1,3 +1,29 @@
+python3 -m venv venv
+source venv/bin/activate
+pip3 install Flask Flask-SQLAlchemy Flask-Migrate Flask-Login Flask-WTF
+FLASK_APP=app.py
+export FLASK_ENV=development  # On macOS and Linux
+export FLASK_DEBUG=1
+
+#first time
+flask db init
+flask db migrate -m "Initial migration."
+flask db upgrade
+
+#when DB change
+flask db migrate -m "Description of changes."
+flask db upgrade
+
+# Running the app
+flask run
+
+
+
+flask --app app.py run
+
+
+
+#OLD
 kill -9 $(lsof -ti:5000)
 
 source venv/bin/activate

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from flask_migrate import Migrate
 
 import uuid
 
@@ -8,6 +9,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 class User(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -38,7 +40,9 @@ class PublicProfile(db.Model):
     num_ratings = Column(Integer, default=0)   # To store the number of ratings
     average_rating = Column(Float, default=0)  # To store the average rating
 
-# ... (Rest of the code remains the same)
+@app.route('/')
+def home():
+    return render_template('home.html')
 
 @app.route('/logout')
 def logout():
