@@ -12,7 +12,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(128), nullable=False)
     invitation_code = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(20), default="user")
-    profiles = db.relationship('Profile', backref='owner')
+    profiles = db.relationship('Profile', back_populates='user')
 
     def is_admin(self):
         return self.role == "admin"
@@ -30,6 +30,7 @@ class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(36), unique=True, default=str(uuid.uuid4()))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', back_populates='profiles')
     name = db.Column(db.String(100), nullable=False)  # Name for the profile
     phone = db.Column(db.String(20))
     linkedin = db.Column(db.String(200))

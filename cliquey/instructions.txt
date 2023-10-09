@@ -1,6 +1,6 @@
 python3 -m venv venv
 source venv/bin/activate
-pip3 install Flask Flask-SQLAlchemy Flask-Migrate Flask-Login Flask-WTF
+pip3 install Flask Flask-SQLAlchemy Flask-Migrate Flask-Login Flask-WTF "werkzeug<3.0"
 FLASK_APP=app.py
 export FLASK_ENV=development  # On macOS and Linux
 export FLASK_DEBUG=1

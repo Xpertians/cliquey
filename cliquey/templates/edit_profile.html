@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+</head>
+<body>
+    <h2>Edit Profile</h2>
+    <form action="{{ url_for('edit_profile', profile_id=profile.id) }}" method="post">
+        <!-- Assuming 'profile' is a passed context variable -->
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ profile.name }}">
+        </div>
+        <!-- Add other fields similarly... -->
+        <div>
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+</body>
+</html>
